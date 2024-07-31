@@ -1,3 +1,6 @@
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Effect } from "aws-cdk-lib/aws-iam";
+
 export type HealthCheck = {
     command: string[];
     interval?: number
@@ -65,5 +68,14 @@ export type ECSClusterSpec = {
             default: string,
             [key: string]: string;
         }
+    }
+}
+
+export type Policy = {
+    [key: string]: {
+        effect: Effect;
+        actions: string[];
+        resources: string[];
+        statement: iam.PolicyStatement | null;
     }
 }

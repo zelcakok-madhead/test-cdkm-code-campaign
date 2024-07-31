@@ -1,8 +1,10 @@
-import { readFileSync, existsSync } from 'fs';
 import * as yaml from 'js-yaml';
-import { ECSClusterSpec } from './interface';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { readFileSync, existsSync } from 'fs';
+import { ECSClusterSpec, Policy } from './interface';
 
 const CLUSTER_PATH = `${__dirname}/../ecs-cluster.yaml`;
+const POLICIES_PATH = `${__dirname}/../configs/policies.yaml`;
 
 const configToJSON = (path: string): any => {
     if (existsSync(path)) {
@@ -22,4 +24,25 @@ export const clusterConfigToSpec = (): ECSClusterSpec => {
 export const clusterNameFromSpec = (): string => {
     const { cluster: config } = configToJSON(CLUSTER_PATH);
     return `cdk-managed-${config.name!}-ecs-stack`;
+}
+
+export const policiesConfigToIAMPolicyStatements = () => {
+    const policies = configToJSON(POLICIES_PATH);
+    const template: Policy = {};
+    for (const service in policies) {
+        if (!template?.[service]) {
+            template[service] = {
+                effect: iam.Effect.ALLOW,
+                actions: [],
+                resources: [],
+                statement: null
+            }
+        }
+        for (const action in policies[service]) {
+            template[service].actions.push(`${service}:${action}`);
+            template[service].resources = policies[service][action].resources;
+        }
+        template[service].statement = new iam.PolicyStatement(template[service]);
+    }
+    return template
 }

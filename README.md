@@ -8,63 +8,6 @@
 ### Deployment
 [Cluster Deployment here]
 
-## Upgrade Template
-| Platforms      | Script                |
-| -------------- | --------------------- |
-| Windows        | upgrade-template.bat  |
-| Linux + Mac OS | upgrade-template.bash |
-
-## Steps
-1. Run `npm install`. # Install the CDK libraries
-2. Edit ecs-cluster.yaml.
-    ```yaml
-    # Example
-    cluster:
-        name: sample
-        vpc:
-            maxAzs: 2
-        taskDefinitions:
-            nginx:
-                memoryLimitMiB: 512
-                cpu: 256
-        containers:
-            nginx:
-                ecrRepoName: cdk-demo
-                port: 80
-                healthCheck:
-                    command: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
-                    interval: 30
-                    timeout: 5
-                    retries: 3
-                    startPeriod: 60
-        services:
-            nginx:
-                desiredCount: 1
-                autoscaling: # Remove this part if no autoscaling
-                    maxCapacity: 1
-                    minCapacity: 0
-                    metrics:
-                        cpu:
-                            targetUtilizationPercent: 50
-                            scaleInCooldown: 60
-                            scaleOutCooldown: 60
-                        memory:
-                            targetUtilizationPercent: 50
-                            scaleInCooldown: 60
-                            scaleOutCooldown: 60
-                        request:
-                            requestPerTarget: 10
-                            scaleInCooldown: 60
-                            scaleOutCooldown: 60                    
-        routes:
-            default:
-                response: "Default response"
-            nginx: /nginx
-    ```
-3. Run `npm run build` to build typescript files.
-4. Run `cdk deploy` to deploy.
-
-
 ## Remote to container
 ### Prerequisite
 1. AWS CLI
@@ -103,3 +46,141 @@ The Session Manager plugin was installed successfully. Use the AWS CLI to start 
 Starting session with SessionId: ecs-execute-command-4xloetrh7yjw2l4ezsgz4znt2m
 root@ip-10-0-3-168:/# 
 ```
+
+## Upgrade Template
+| Platforms      | Script                |
+| -------------- | --------------------- |
+| Windows        | upgrade-template.bat  |
+| Linux + Mac OS | upgrade-template.bash |
+
+## Steps
+1. Run `npm install`. # Install the CDK libraries
+2. Edit ecs-cluster.yaml.
+    ```yaml
+    # Example
+    cluster:
+      name: sample
+      vpc:
+        maxAzs: 2
+      taskDefinitions:
+        nginx:
+          memoryLimitMiB: 512
+          cpu: 256
+      containers:
+        nginx:
+          ecrRepoName: cdk-demo
+          port: 80
+          healthCheck:
+            command: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
+            interval: 30
+            timeout: 5
+            retries: 3
+            startPeriod: 60
+      services:
+        nginx:
+          desiredCount: 1
+          autoscaling: # Remove this part if no autoscaling
+            maxCapacity: 1
+            minCapacity: 0
+            metrics:
+              cpu:
+                targetUtilizationPercent: 50
+                scaleInCooldown: 60
+                scaleOutCooldown: 60
+              memory:
+                targetUtilizationPercent: 50
+                scaleInCooldown: 60
+                scaleOutCooldown: 60
+              request:
+                requestPerTarget: 10
+                scaleInCooldown: 60
+                scaleOutCooldown: 60                    
+      routes:
+        default:
+          response: "Default response"
+        nginx: /nginx
+    ```
+3. Define the policies in `/configs/policies.yaml`.
+    ```yaml
+    # Example
+    secretsmanager:
+      GetSecretValue:
+        resources:
+        - "secret Arn 1"
+        - "secret Arn 2"    
+    ```    
+4. Run `npm run build` to build typescript files.
+5. Run `cdk deploy` to deploy.
+
+## Git Actions Integration
+1. Edit `.github/workflows/main.yaml`.
+2. Replace `UPDATE_BRANCH_NAME_HERE` variable with the target branch name.
+    ```bash
+    # Example
+    on:
+      push:
+        branches:
+          - main
+        paths:
+          ...
+      pull_request:
+        branches:
+          - main
+        paths:
+          ...          
+    ```
+3. Replace UPDATE_ENVIRONMENT_NAME_HERE variable with the target environment name.
+    ```bash
+    # Example
+    jobs:
+    cdk-deploy:
+      runs-on: ubuntu-latest
+      environment: dev
+    ```
+4. Set the Git Actions secrets.
+    ```bash
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ID }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    ```
+5. Setup the environment secrets on Github.
+6. Git push to trigger Git Actions
+
+## Deploy to multiple environment
+1. Copy `.github/workflows/main.yaml` to `.github/workflows/{branch-name}.yaml`
+2. Replace `UPDATE_BRANCH_NAME_HERE` variable with the target branch name.
+    ```bash
+    # Example
+    on:
+      push:
+        branches:
+          - {branch-name}
+        paths:
+          ...
+      pull_request:
+        branches:
+          - {branch-name}
+        paths:
+          ...          
+    ```
+3. Replace UPDATE_ENVIRONMENT_NAME_HERE variable with the target environment name.
+    ```bash
+    # Example
+    jobs:
+    cdk-deploy:
+      runs-on: ubuntu-latest
+      environment: dev
+    ```    
+4. Update and set the Git Actions secrets.
+    ```bash
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ID }}
+        aws-region: ${{ secrets.AWS_REGION }}  
+    ```  
+5. Setup the environment secrets on Github.
+6. Git push to trigger Git Actions
+

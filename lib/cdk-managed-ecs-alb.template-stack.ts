@@ -6,7 +6,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { clusterConfigToSpec } from '../utils';
+import { clusterConfigToSpec, policiesConfigToIAMPolicyStatements } from '../utils';
 import { ECSClusterSpec, Metrics, ResourceMetric } from '../utils/interface';
 
 export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
@@ -15,6 +15,7 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
 
     // Load ecs-cluster.yaml file
     const config: ECSClusterSpec = clusterConfigToSpec();
+    const policyTemplates = policiesConfigToIAMPolicyStatements();
     const { name, vpc, taskDefinitions, containers, services, routes } = config.cluster;
 
     // Create log group
@@ -60,6 +61,12 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
       ],
       resources: ["*"],
     }));
+
+    // Load the IAM role policies in configs/policies.yaml
+    for (const service in policyTemplates) {
+      const { statement } = policyTemplates[service];
+      taskRole.addToPolicy(statement!);
+    }
 
     // Create ECS cluster
     const cluster = new ecs.Cluster(this, `${name}`, { vpc: clusterVPC, clusterName: name });
