@@ -35,7 +35,7 @@ function main() {
     fi
 
     # Skip select if len = 1
-    if [ 0 || ${#TASK_ARN_ARRAY[@]} -eq 1 ]; then
+    if [ ${#TASK_ARN_ARRAY[@]} -eq 1 ]; then
         choice=0
         remote
         exit 0
