@@ -67,7 +67,7 @@
 
 ## Remote to container
 ### Prerequisite
-1. AWS Cli
+1. AWS CLI
    * https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 2. Install the Session Manager plugin for the AWS CLI
    * https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
