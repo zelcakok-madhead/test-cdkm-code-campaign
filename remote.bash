@@ -5,11 +5,12 @@ SERVICE_NAME=$2
 function show_menu() {
     echo -e "\nPlease select a task to remote:\n"
     counter=0
-    for TASK_ARN in $TASK_ARNS; do
+    for TASK_ARN in "${TASK_ARN_ARRAY[@]}"; do
         TASK_ID=$(echo $TASK_ARN | awk -F'/' '{print $NF}')
-        echo -e "$counter) $TASK_ID\n"
-        counter=$counter+1
+        echo -e "$counter) $TASK_ID"
+        ((counter++))
     done
+    echo ""
 }
 
 function remote() {
@@ -25,11 +26,9 @@ function remote() {
 
 function main() {
     # List tasks for the specified service
-    TASK_ARNS=$(aws ecs list-tasks --cluster $CLUSTER_NAME --service-name $SERVICE_NAME --query "taskArns[]" --output text)
-    IFS=' ' read -r -a TASK_ARN_ARRAY <<<"$TASK_ARNS"
-
+    TASK_ARN_ARRAY=($(aws ecs list-tasks --cluster $CLUSTER_NAME --service-name $SERVICE_NAME --query "taskArns[]" --output text))
     # Check if there are any tasks
-    if [ -z "$TASK_ARNS" ]; then
+    if [ ${#TASK_ARN_ARRAY[@]} -eq 0 ]; then
         echo -e "\nNo tasks found for service $SERVICE_NAME in cluster $CLUSTER_NAME.\n"
         exit 1
     fi
