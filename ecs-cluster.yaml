@@ -1,0 +1,41 @@
+cluster:
+  name: "<Input cluster name here>"
+  vpc:
+    maxAzs: 2
+  taskDefinitions:
+    "<Service name>":
+      memoryLimitMiB: "<Minimum Memory: 512 MiB>"
+      cpu: "<Minimum CPU: 256 CPU units (0.25 vCPU)>"
+  containers:
+    "<Service name>":
+      image: "<ECR image, default = nginx:latest>"
+      port: "<Container port>"
+      healthCheck:
+        command: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
+        interval: 30
+        timeout: 5
+        retries: 3
+        startPeriod: 60
+  services:
+    "<Service name>":
+      desiredCount: "<Desired count, min = 0>"
+      autoscaling:
+        maxCapacity: "<Max instances>"
+        minCapacity: "<Min instances, min = 0>"
+        metrics:
+          cpu:
+            targetUtilizationPercent: "<Percentage, e.g. 50>"
+            scaleInCooldown: "<Second(s)>"
+            scaleOutCooldown: "<Second(s)>"
+          memory:
+            targetUtilizationPercent: "<Percentage, e.g. 50>"
+            scaleInCooldown: "<Second(s)>"
+            scaleOutCooldown: "<Second(s)>"
+          request:
+            requestPerTarget: "<Request count>"
+            scaleInCooldown: "<Second(s)>"
+            scaleOutCooldown: "<Second(s)>"
+  routes:
+    default:
+      response: "<Input the default response here>"
+    "<Service name>": "<Input the path pattern here, e.g. /api/*>"
