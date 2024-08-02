@@ -21,6 +21,7 @@ on:
       - "utils/**"
       - "ecs-cluster.yaml"
       - "tsconfig.json"
+  workflow_dispatch:      
 
 jobs:
   cdk-deploy:
