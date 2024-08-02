@@ -8,7 +8,7 @@ cluster:
       cpu: "<Minimum CPU: 256 CPU units (0.25 vCPU)>"
   containers:
     "<Service name>":
-      image: "<ECR image, default = nginx:latest>"
+      ecrRepoName: "<Private ECR image, e.g. my-repo>"
       port: "<Container port>"
       healthCheck:
         command: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
