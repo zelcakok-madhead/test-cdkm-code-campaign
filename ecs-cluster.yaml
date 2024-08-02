@@ -1,5 +1,7 @@
 cluster:
   name: "<Input cluster name here>"
+  log:
+    retentionDuration: null  
   vpc:
     maxAzs: 2
   taskDefinitions:
@@ -18,7 +20,6 @@ cluster:
         startPeriod: 60
   services:
     "<Service name>":
-      desiredCount: "<Desired count, min = 0>"
       autoscaling:
         maxCapacity: "<Max instances>"
         minCapacity: "<Min instances, min = 0>"

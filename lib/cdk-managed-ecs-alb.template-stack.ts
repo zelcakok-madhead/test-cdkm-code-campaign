@@ -16,12 +16,13 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
     // Load ecs-cluster.yaml file
     const config: ECSClusterSpec = clusterConfigToSpec();
     const policyTemplates = policiesConfigToIAMPolicyStatements();
-    const { name, vpc, taskDefinitions, containers, services, routes } = config.cluster;
+    const { name, log, vpc, taskDefinitions, containers, services, routes } = config.cluster;
 
     // Create log group
+    const retentionKey = log.retentionDuration || "ONE_MONTH";
     const logGroup = new logs.LogGroup(this, `${name}-loggrp`, {
       logGroupName: `/ecs/${name}-log-group`,
-      retention: logs.RetentionDays.ONE_MONTH,
+      retention: logs.RetentionDays[retentionKey as keyof typeof logs.RetentionDays],
       removalPolicy: cdk.RemovalPolicy.DESTROY // Optional: delete the log group when the stack is destroyed
     });
 
@@ -112,14 +113,16 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
     let scaling: { [key: string]: ecs.ScalableTaskCount | null } = {};
     const taskNameServices: { [key: string]: ecs.FargateService } = {}
     for (const taskName in services) {
-      const { desiredCount, autoscaling } = services[taskName];
       const service = new ecs.FargateService(this, `${name}-${taskName}-service`, {
         serviceName: taskName,
         cluster,
         taskDefinition: clusterTaskDefinitions[taskName],
-        desiredCount,
         enableExecuteCommand: true,
       });
+      if (!services[taskName]?.autoscaling) {
+        continue;
+      }
+      const autoscaling = services[taskName].autoscaling;
       const hasMetric = autoscaling?.metrics !== undefined;
       taskNameServices[taskName] = service;
       if (!hasMetric) {

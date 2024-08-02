@@ -40,7 +40,6 @@ export type Metrics = {
 }
 
 export type ServiceSpec = {
-    desiredCount: number;
     autoscaling?: {
         maxCapacity: number;
         minCapacity: number;
@@ -51,19 +50,22 @@ export type ServiceSpec = {
 export type ECSClusterSpec = {
     cluster: {
         name: string;
+        log: {
+            retentionDuration?: string;
+        };
         vpc: {
             ipAddresses: string;
             maxAzs?: number;
-        },
+        };
         taskDefinitions: {
             [key: string]: TaskDefinition;
-        },
+        };
         containers: {
             [key: string]: ContainerSpec;
-        },
+        };
         services: {
             [key: string]: ServiceSpec;
-        },
+        };
         routes: {
             default: string,
             [key: string]: string;
