@@ -60,6 +60,8 @@ root@ip-10-0-3-168:/#
     # Example
     cluster:
       name: sample
+      log:
+        retentionDuration: null # Default ONE_MONTH. for available keys [see log group section]
       vpc:
         maxAzs: 2
       taskDefinitions:
@@ -78,7 +80,6 @@ root@ip-10-0-3-168:/#
             startPeriod: 60
       services:
         nginx:
-          desiredCount: 1
           autoscaling: # Remove this part if no autoscaling
             maxCapacity: 1
             minCapacity: 0
@@ -184,3 +185,31 @@ root@ip-10-0-3-168:/#
 5. Setup the environment secrets on Github.
 6. Git push to trigger Git Actions
 
+## Log Group
+```bash
+# Retention Durations
+
+ONE_DAY          # 1 day
+THREE_DAYS       # 3 days
+FIVE_DAYS        # 5 days
+ONE_WEEK         # 1 week
+TWO_WEEKS        # 2 weeks
+ONE_MONTH        # 1 month
+TWO_MONTHS       # 2 months
+THREE_MONTHS     # 3 months
+FOUR_MONTHS      # 4 months
+FIVE_MONTHS      # 5 months
+SIX_MONTHS       # 6 months
+ONE_YEAR         # 1 year
+THIRTEEN_MONTHS  # 13 months
+EIGHTEEN_MONTHS  # 18 months
+TWO_YEARS        # 2 years
+THREE_YEARS      # 3 years
+FIVE_YEARS       # 5 years
+SIX_YEARS        # 6 years
+SEVEN_YEARS      # 7 years
+EIGHT_YEARS      # 8 years
+NINE_YEARS       # 9 years
+TEN_YEARS        # 10 years
+INFINITE         # Retain logs forever
+```
