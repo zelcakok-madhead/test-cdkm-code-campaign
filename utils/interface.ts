@@ -81,3 +81,7 @@ export type Policy = {
         statement: iam.PolicyStatement | null;
     }
 }
+
+export type EnvironmentSpec = {
+    [key: string]: string;
+}

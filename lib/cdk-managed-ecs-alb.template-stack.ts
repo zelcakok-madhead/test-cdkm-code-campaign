@@ -6,7 +6,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { clusterConfigToSpec, policiesConfigToIAMPolicyStatements } from '../utils';
+import { clusterConfigToSpec, environmentConfigToSpec, policiesConfigToIAMPolicyStatements } from '../utils';
 import { ECSClusterSpec, Metrics, ResourceMetric } from '../utils/interface';
 
 export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
@@ -16,6 +16,7 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
     // Load ecs-cluster.yaml file
     const config: ECSClusterSpec = clusterConfigToSpec();
     const policyTemplates = policiesConfigToIAMPolicyStatements();
+    const envVarSpec = environmentConfigToSpec();
     const { name, log, vpc, taskDefinitions, containers, services, routes } = config.cluster;
 
     // Create log group
@@ -94,6 +95,7 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
       clusterTaskDefinitions[taskName].addContainer(`${name}-${taskName}-container`, {
         containerName: taskName,
         image,
+        environment: envVarSpec,
         portMappings: [{ containerPort: port }],
         healthCheck: {
           command: healthCheck.command,

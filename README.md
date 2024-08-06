@@ -110,8 +110,15 @@ root@ip-10-0-3-168:/#
         - "secret Arn 1"
         - "secret Arn 2"    
     ```    
-4. Run `npm run build` to build typescript files.
-5. Run `cdk deploy` to deploy.
+4. Define the environment variables in `/configs/env.yaml`.
+    ```yaml
+    # Example
+    vars:
+      "<key 1>": "<value 1>"
+      "<key 2>": "<value 2>"
+    ```    
+5. Run `npm run build` to build typescript files.
+6. Run `cdk deploy` to deploy.
 
 ## Git Actions Integration
 1. Edit `.github/workflows/main.yaml`.
