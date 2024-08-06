@@ -5,7 +5,7 @@ cluster:
   vpc:
     maxAzs: 2
     targetVPCId: null
-    dedicatedVPC: "10.20.0.0/16"    
+    dedicatedVPC: null
   taskDefinitions:
     "<Service name>":
       memoryLimitMiB: "<Minimum Memory: 512 MiB>"
