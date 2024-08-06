@@ -64,6 +64,8 @@ root@ip-10-0-3-168:/#
         retentionDuration: null # Default ONE_MONTH. for available keys [see log group section]
       vpc:
         maxAzs: 2
+        targetVPCId: null
+        dedicatedVPC: "10.20.0.0/16"
       taskDefinitions:
         nginx:
           memoryLimitMiB: 512

@@ -1,9 +1,11 @@
 cluster:
   name: "<Input cluster name here>"
   log:
-    retentionDuration: null  
+    retentionDuration: null
   vpc:
     maxAzs: 2
+    targetVPCId: null
+    dedicatedVPC: "10.20.0.0/16"    
   taskDefinitions:
     "<Service name>":
       memoryLimitMiB: "<Minimum Memory: 512 MiB>"

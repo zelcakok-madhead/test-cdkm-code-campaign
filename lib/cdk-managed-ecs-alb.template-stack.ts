@@ -6,7 +6,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { clusterConfigToSpec, environmentConfigToSpec, policiesConfigToIAMPolicyStatements } from '../utils';
+import { clusterConfigToSpec, environmentConfigToSpec, getECSVPC, policiesConfigToIAMPolicyStatements } from '../utils';
 import { ECSClusterSpec, Metrics, ResourceMetric } from '../utils/interface';
 
 export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
@@ -27,22 +27,8 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY // Optional: delete the log group when the stack is destroyed
     });
 
-    // Create VPC
-    const clusterVPC = new ec2.Vpc(this, `${name}-default-vpc`, {
-      maxAzs: vpc?.maxAzs || 1,
-      subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: `${name}-nat-subnet`, // For NAT gateway
-          subnetType: ec2.SubnetType.PUBLIC,
-        },
-        {
-          cidrMask: 24,
-          name: `${name}-subnet`,
-          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS
-        },
-      ],
-    });
+    // Create or Reuse VPC
+    const clusterVPC = getECSVPC(this, config);
 
     // Create the taskRole for aws exec
     const taskRole = new iam.Role(this, 'TaskRole', {

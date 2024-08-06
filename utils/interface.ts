@@ -54,8 +54,9 @@ export type ECSClusterSpec = {
             retentionDuration?: string;
         };
         vpc: {
-            ipAddresses: string;
             maxAzs?: number;
+            targetVPCId?: string;
+            dedicatedVPC?: string;            
         };
         taskDefinitions: {
             [key: string]: TaskDefinition;
