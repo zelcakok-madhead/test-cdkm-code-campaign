@@ -122,6 +122,9 @@ export class CdkManagedEcsAlbTemplateStack extends cdk.Stack {
       });
       for (const metricKey of ['cpu', 'memory']) {
         const metric = autoscaling.metrics?.[metricKey as keyof Metrics]!
+        if (!metric) {
+          continue
+        }
         const { targetUtilizationPercent, scaleInCooldown, scaleOutCooldown } = metric as ResourceMetric;
         const spec = {
           policyName: `${name}-${taskName}-as${metricKey}`,
