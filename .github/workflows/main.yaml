@@ -26,7 +26,6 @@ on:
 jobs:
   cdk-deploy:
     runs-on: ubuntu-latest
-    environment: main
 
     steps:
       - name: Checkout repository
