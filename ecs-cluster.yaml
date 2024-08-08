@@ -1,19 +1,19 @@
 cluster:
-  name: "<Input cluster name here>"
+  name: cdkm-code-campaign
   log:
-    retentionDuration: null
+    retentionDuration: SIX_MONTHS
   vpc:
     maxAzs: 2
     targetVPCId: null
-    dedicatedVPC: null
+    dedicatedVPC: 10.100.0.0/16
   taskDefinitions:
-    "<Service name>":
-      memoryLimitMiB: "<Minimum Memory: 512 MiB>"
-      cpu: "<Minimum CPU: 256 CPU units (0.25 vCPU)>"
+    api:
+      memoryLimitMiB: 512
+      cpu: 256
   containers:
-    "<Service name>":
-      ecrRepoName: "<Private ECR image, e.g. my-repo>"
-      port: "<Container port>"
+    api:
+      ecrRepoName: code-campaign-deployment-migration
+      port: 80
       healthCheck:
         command: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
         interval: 30
@@ -21,24 +21,16 @@ cluster:
         retries: 3
         startPeriod: 60
   services:
-    "<Service name>":
+    api:
       autoscaling:
-        maxCapacity: "<Max instances>"
-        minCapacity: "<Min instances, min = 0>"
+        maxCapacity: 4
+        minCapacity: 0
         metrics:
           cpu:
-            targetUtilizationPercent: "<Percentage, e.g. 50>"
-            scaleInCooldown: "<Second(s)>"
-            scaleOutCooldown: "<Second(s)>"
-          memory:
-            targetUtilizationPercent: "<Percentage, e.g. 50>"
-            scaleInCooldown: "<Second(s)>"
-            scaleOutCooldown: "<Second(s)>"
-          request:
-            requestPerTarget: "<Request count>"
-            scaleInCooldown: "<Second(s)>"
-            scaleOutCooldown: "<Second(s)>"
+            targetUtilizationPercent: 30
+            scaleInCooldown: 60
+            scaleOutCooldown: 60
   routes:
     default:
-      response: "<Input the default response here>"
-    "<Service name>": "<Input the path pattern here, e.g. /api/*>"
+      response: "Code Campaign API Server"
+    api: /api

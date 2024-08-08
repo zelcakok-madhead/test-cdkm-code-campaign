@@ -1,0 +1,4 @@
+secretsmanager:
+  GetSecretValue:
+    resources:
+      - "arn:aws:secretsmanager:ap-east-1:095728253529:secret:testing.code.campaign.env-IfpP7Y"
