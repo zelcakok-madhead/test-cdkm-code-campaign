@@ -12,7 +12,7 @@ cluster:
       cpu: 256
   containers:
     api:
-      ecrRepoName: code-campaign-deployment-migration
+      ecrRepoName: code-campaign-dev
       port: 80
       healthCheck:
         command: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
